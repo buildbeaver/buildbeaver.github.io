@@ -1,0 +1,8 @@
+{
+  "label": "Getting Started - Go",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Create and run a Dynamic Build expressed in Go, in 10 minutes."
+  }
+}
