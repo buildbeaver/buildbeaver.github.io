@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'BuildBeaver',
   tagline: 'Ship better software, faster.',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon-beaver.png',
 
   // Set the production url of your site here
   url: 'https://buildbeaver.github.io/',
