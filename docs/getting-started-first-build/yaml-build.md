@@ -26,7 +26,8 @@ git commit -a -m "Tell Git to ignore the 'output' directory"
 
 Let's test that BuildBeaver is working by running a simple YAML based build, before moving on to Go.
 
-Create a ``buildbeaver.yml`` file in the root of your Git repo using your favourite editor with the following content:
+Create a ``buildbeaver.yml`` file in the root directory of your repo (e.g. the build1 directory above) using
+your favourite editor, and paste in the following content:
 
 ```yaml
 jobs:
