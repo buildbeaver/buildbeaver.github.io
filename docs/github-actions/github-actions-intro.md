@@ -95,8 +95,8 @@ This will only install the default version of BB CLI into your Runner's path, le
 
 The following inputs can be used as `step.with` keys
 
-| Name | Type | Default | Description |
-| ----------- | ----------- | ----------- | ----------- |
-| version | String | 1.0.0 | The version of the BuildBeaver CLI to install (e.g. from https://github.com/buildbeaver/buildbeaver/releases ) |
-| install-only | Boolean | false | Set to true to only install the BuildBeaver CLI accessible on the runners PATH |
-| args | String | '' | Any additional args to pass to the [run command](../cli-reference/command-run.md) |
+| Name | Type | Default | Description                                                                                               |
+| ----------- | ----------- | ----------- |-----------------------------------------------------------------------------------------------------------|
+| version | String | 1.0.0 | The version of the BuildBeaver CLI to install (e.g. from https://github.com/buildbeaver/bb-cli/releases ) |
+| install-only | Boolean | false | Set to true to only install the BuildBeaver CLI accessible on the runners PATH                            |
+| args | String | '' | Any additional args to pass to the [run command](../cli-reference/command-run.md)                         |

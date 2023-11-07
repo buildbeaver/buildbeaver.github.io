@@ -20,9 +20,9 @@ Before you start, ensure you have the following installed on your development ma
 
 ## BuildBeaver
 
-Download the **BuildBeaver command-line tool** executable for either [Mac](https://github.com/buildbeaver/buildbeaver),
-[Windows](https://github.com/buildbeaver/buildbeaver) or 
-[Linux](https://github.com/buildbeaver/buildbeaver), 
+Download the **BuildBeaver command-line tool** executable for either [Mac](https://github.com/buildbeaver/bb-cli),
+[Windows](https://github.com/buildbeaver/bb-cli) or 
+[Linux](https://github.com/buildbeaver/bb-cli), 
 and add the executable to your path.
 
 The BuildBeaver command line tool is open source, so you have the option to compile it yourself from the GitHub repo.

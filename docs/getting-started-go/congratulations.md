@@ -7,7 +7,7 @@ sidebar_position: 4
 You have just learned the **basics of creating a Go Dynamic Build**.
 
 We'd love to hear what you think of BuildBeaver! If you like it, or there are things you feel are
-missing or needed, please [Contact us!](https://github.com/buildbeaver/buildbeaver/issues)!
+missing or needed, please [Contact us!](https://github.com/buildbeaver/bb-cli/issues)!
 
 ## What's next?
 

@@ -13,7 +13,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/buildbeaver/dynamic-sdk-go"
+	"github.com/buildbeaver/go-sdk/bb"
 )
 
 var useNodeJSDockerImage = bb.NewDocker().
