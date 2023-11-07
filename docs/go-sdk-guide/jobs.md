@@ -9,16 +9,16 @@ contains one or more *Steps*.
 
 All Steps within a Job are run within the same environment and so steps can share files or other state. Each job
 runs within its own separate environment and should not expect files from other jobs to be available; instead it
-should declare *Artifact Dependencies* to make files from other jobs available.
+should declare [Artifact Dependencies](jobs#job-dependencies) to make files from other jobs available.
 
 ## Submitting a Job
 
-A new Job is added to a workflow by calling NewJob() to create a *Job Definition*, then calling the workflow Job()
+A new Job is added to a workflow by calling ``NewJob()`` to create a *Job Definition*, then calling the workflow Job()
 method to add the definition to a list of jobs ready to be submitted to the server. After the workflow
 function returns, any outstanding jobs will be submitted. Properties are set on the Job Definition by
 calling methods on the object.
 
-Here's a complete  example of a Workflow Handler written in Go:
+Here's a complete example of a Workflow Handler that submits a Job, written in Go:
 
 ```go
 func handler(w *bb.Workflow) error {
@@ -148,7 +148,8 @@ replaced with ``....`` for brevity):
 ## Job Dependencies
 
 *Job dependencies* can be used to ensure a job doesn't run until after another job completes, and optionally to
-make available artifacts from another job. (By default, all submitted jobs are eligible to run in parallel).
+make available artifacts from another job. If no job dependencies are specified then all submitted jobs
+are eligible to run in parallel.
 
 The following Job methods are available to define dependencies:
 
