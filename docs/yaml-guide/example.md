@@ -4,7 +4,7 @@ sidebar_position: 5
 
 # Real-World Example
 
-The following YAML is a real-world build, and shows most of the features of the BuildBeaver YAML
+The following YAML is a real-world build, and demonstrates most of the features of the BuildBeaver YAML
 syntax.
 
 ```YAML
