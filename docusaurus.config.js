@@ -65,10 +65,14 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            to: 'docs/category/getting-started---first-build',
+            label: 'Getting Started',
             position: 'left',
-            label: 'Tutorial',
+          },
+          {
+            to: 'docs/category/guide-to-dynamic-builds',
+            label: 'Guide to Dynamic Builds',
+            position: 'left',
           },
 //          {to: '/blog', label: 'Blog', position: 'left'},
           {

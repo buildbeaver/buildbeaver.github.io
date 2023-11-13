@@ -7,13 +7,17 @@ sidebar_position: 1
 The easiest and most powerful way to define your build in BuildBeaver is using code. The code can
 be as simple as YAML, but provides all the power of a full programming language.
 
-This page shows you how to use the BuildBeaver Go SDK to define a dynamic build.
+This page shows you how to use the BuildBeaver Go SDK to define a dynamic build, using the ``build1`` directory you
+already set up in the [Getting Started - First Build](../category/getting-started---first-build/) tutorial.
+
+**Prerequisite**: Install [Golang](https://go.dev/doc/install) version 1.17 or greater on your development machine.
 
 ## Create a Go program using the BuildBeaver SDK
 
 Make a new directory with a Go project for the build definition:
 
 ```bash
+cd build1
 mkdir build
 cd build
 go mod init example.com/build
@@ -24,7 +28,7 @@ Fetch the BuildBeaver Go SDK:
 ```bash
 go get github.com/buildbeaver/go-sdk
 ```
-Create a Go file in the build directory called `build.go` with the following contents:
+Create a Go file inside the ``build`` directory called `build.go` and paste in the following contents:
 
 ```go
 package main

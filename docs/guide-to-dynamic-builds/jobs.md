@@ -59,7 +59,7 @@ sections:
 
 - **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
   execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
-  already produced the required artifacts. See [Fingerprinting](Fingerprinting) for details and examples.
+  already produced the required artifacts. See [Fingerprinting](fingerprints) for details and examples.
 
 - **RunsOn** (optional): a set of labels constraining which types of runner the job can run on. Only runners
   which have all of these labels will be eligible to run this Job. Not relevant when builds are run using

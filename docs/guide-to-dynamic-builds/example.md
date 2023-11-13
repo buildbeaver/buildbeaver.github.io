@@ -4,8 +4,8 @@ sidebar_position: 20
 
 # Real-World Example
 
-The following Go code is a real-world Build Controller, and shows many  of the features of the BuildBeaver Go Dynamic
-SDK.
+The following Go code is a real-world Build Controller, and demonstrates many of the dynamic features of the
+BuildBeaver Go SDK.
 
 ```go
 package main

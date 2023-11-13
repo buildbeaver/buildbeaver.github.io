@@ -1,10 +1,10 @@
 ---
-sidebar_position: 5
+sidebar_position: 7
 ---
 
-# Fingerprinting
+# Fingerprints
 
-## Fingerprints
+To be documented:
 
   ```go
   func (job *Job) Fingerprint(commands ...string) *Job

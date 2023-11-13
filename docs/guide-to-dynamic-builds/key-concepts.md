@@ -6,8 +6,9 @@ sidebar_position: 1
 BuildBeaver is centered on the idea of fully dynamic builds that can be run anywhere. That means on your laptop,
 inside a CI system (including GitHub Actions).
 
-**Build Controller**: There is a single *Build Controller* job per build, which defines the workflows making up the
-build and adds all dynamically-submitted jobs to the build.
+**Build Controller**: There is a single *Build Controller* job per build, running a program which defines the
+workflows making up the build and adds all dynamically-submitted jobs. New jobs can be added to any workflow
+at any time in code.
 
 **API Based**: The Build Controller job communicates with the BuildBeaver server (or a cut-down server running
 inside the **bb** executable) via the *Dynamic REsT API*. There is an OpenAPI definition for this API, as well
@@ -24,5 +25,5 @@ for building and submitting Jobs, as well as support for events, subscriptions a
 This provides a lower-level (and less friendly) interface to the API, and does not normally need to be
 called directly. Many data types from this package are used in the 'bb' package.
 
-**Python and TypeScript SDKs**: OpenAPI-generated clients in Python, TypeScript, and other languages are coming
-soon, followed by custom libraries providing similar functionality to the 'bb' package.
+**Python and TypeScript SDKs**: OpenAPI-generated clients in Python, TypeScript, and other languages are planned,
+followed by custom libraries providing similar functionality to the 'bb' package.
