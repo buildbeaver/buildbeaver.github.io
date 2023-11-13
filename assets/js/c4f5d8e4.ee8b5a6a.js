@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[195],{2841:(e,t,i)=>{i.r(t),i.d(t,{default:()=>a});var s=i(7294),r=i(2263),n=i(7961);function a(){const{siteConfig:e}=(0,r.Z)();return s.createElement(n.Z,{title:`${e.title}`,description:"BuildBeaver: Ship better software, faster"})}}}]);
