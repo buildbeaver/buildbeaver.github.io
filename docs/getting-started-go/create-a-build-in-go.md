@@ -54,8 +54,8 @@ func submitTestJobs(w *bb.Workflow) error {
         Step(bb.NewStep().
             Name("produce-report").
             Commands("echo 'Run-Tests Job Executing...'",
-                "mkdir -p results",
-                "echo >results/test-report.txt 'Test Report (artifact from the run-tests job)'",
+                "mkdir -p reports",
+                "echo >reports/test-report.txt 'Test Report (artifact from the run-tests job)'",
             )).
         Artifact(bb.NewArtifact().Name("test-reports").Paths("reports/test-report.txt")).
         OnCompletion(func(event *bb.JobStatusChangedEvent) {
