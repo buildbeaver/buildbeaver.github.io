@@ -32,9 +32,10 @@ jobs:
           ${GOBIN}/builder
 ```
 
-This Job uses a script file at `build/go-env.sh` to set up Go path variables so that the local Go cache will be
-preserved between builds. This isn't strictly needed, but speeds up the running the Go build program, so create
-the file and paste in the following content:
+**Optional**: This Job uses a script file at `build/go-env.sh` to set up Go path variables so that the local Go
+cache will be preserved between builds. This isn't strictly needed, and the build will still run if this script is
+missing, but it speeds up compiling and running the Go Build Controller program. To set up the script, create
+the file at `build/go-env.sh` and paste in the following content:
 
 ```bash
 #!/bin/bash
