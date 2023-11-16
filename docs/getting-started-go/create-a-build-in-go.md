@@ -10,7 +10,7 @@ be as simple as YAML, but provides all the power of a full programming language.
 This page shows you how to use the BuildBeaver Go SDK to define a dynamic build, using the ``build1`` directory you
 already set up in the [Getting Started - First Build](../category/getting-started---first-build/) tutorial.
 
-**Prerequisite**: Install [Golang](https://go.dev/doc/install) version 1.17 or greater on your development machine.
+**Prerequisite**: Install [Golang](https://go.dev/doc/install) version 1.18 or greater on your development machine.
 
 ## Create a Go program using the BuildBeaver SDK
 
