@@ -22,11 +22,13 @@ between workflows, e.g. waiting for artifacts or jobs from another workflow.
 
 ## Registering Workflows
 
-Workflows are created and run by calling the Workflows() function.
+Workflows are created and run by calling the Workflows() function, which takes a list of workflows as parameters.
+The Go syntax is:
    
 ```go
 func Workflows(workflows ...*WorkflowDefinition)
 ```
+
 Workflows() is the 'entry point' function for a Build Coordinator program to define the set of workflows available
 to the build. Each workflow is registered and then all required workflows are run (in parallel by default)
 to submit jobs to the build. Returns when the workflow handlers for all required workflows have completed.
@@ -55,7 +57,7 @@ bb.Workflows(
         Depends("tests", bb.WorkflowConcurrent),
 )
 ```
-The following functions are available to set properties on a Workflow Definition:
+The following methods are available to set properties on a Workflow Definition object:
 
 - **Name** (mandatory): a name to use when referencing the workflow from other workflows.
 

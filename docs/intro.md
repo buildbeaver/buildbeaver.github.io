@@ -16,11 +16,12 @@ Our aim is to help you *ship better software, faster.*
 We've created a build tool that reflects the principles we see as the future of build and CI/CD systems:
 
 - **Use a Real Language**: Use the same language for your software and your build, so any team member can easily
-work on the build. The *BuildBeaver SDK* makes the code just as simple as YAML, but with all the power of a
+work on the build. The *BuildBeaver SDK* makes it simple to define your build jobs, but with all the power of a
 procedural language.
 
 - **Fully Dynamic Builds**: Add new jobs to a build at any time; build code can check the results of previous jobs,
-make API calls, or anything else - and then submit the next jobs to be run within the build.
+make API calls, or anything else - and then submit the next jobs to be run within the build. Rather than generating
+a build pipeline or workflow that then becomes read-only, new jobs can be added to existing workflows at any time.
 
 - **Run anywhere**: Run the same build on your laptop or your CI system. Test builds locally before pushing changes
 to the build code.

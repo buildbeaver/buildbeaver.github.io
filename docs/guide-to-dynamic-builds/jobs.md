@@ -57,60 +57,20 @@ sections:
 - **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
  or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
 
-- **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
-  execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
-  already produced the required artifacts. See [Fingerprinting](fingerprints) for details and examples.
-
 - **RunsOn** (optional): a set of labels constraining which types of runner the job can run on. Only runners
   which have all of these labels will be eligible to run this Job. Not relevant when builds are run using
   the *bb* command line tool.
 
+- **OnCompletion**, **OnSuccess**, **OnFailure**, **OnStatusChanged** (optional): Call the supplied callback function
+  after the Job is completed. See [Job Callbacks](callbacks-and-waits#job-callbacks) for details and examples.
+
+- **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
+  execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
+  already produced the required artifacts. See [Fingerprinting](fingerprints) for details and examples.
+
 - **Service** (optional): Jobs can make use of services such as databases by calling NewService() to create
   a *Service Definition*, then calling the Job's Service() method to add the service.
   See [Services](services) for details and examples.
-
-## Job Callbacks
-
-To take advantage of the dynamic nature of builds, a *Job Callback* function can be called after
-a job has succeeded, failed, or the each time job's status changes. Callbacks are often used to submit
-new jobs to a workflow after previous jobs have finished, based on the results or artifacts produced by
-the previous job.
-
-The callback function takes a single *event* parameter which will contain the Job's new status; other information
-(e.g. artifacts) can be discovered and read from within the callback using the Workflow object.
-
-  ```go
-  type JobCallback func(event *JobStatusChangedEvent)
-  ```
-
-As with workflow handler functions, after the callback function returns any outstanding jobs will be submitted.
-The workflow object's Submit() or MustSubmit() functions can also be used in a callback to submit new jobs
-immediately. Note that the workflow function will often have returned before the callback is called, having finished
-submitting the initial set of Jobs to run.
-
-The following Job methods are available to define callbacks. Each specifies a function to be called:
-
-- **OnCompletion** (optional): call when the Job is completed (succeeded, failed or cancelled).
-
-- **OnSuccess** (optional): call when the Job succeeds. Not called on error.
-
-- **OnFailure** (optional): call when the Job fails.
-
-- **OnStatusChanged** (optional): call each time the status of the Job changes.
-
-Here's an example of the use of callbacks in Go:
-
-```go
-    w.Job(bb.NewJob().
-		Name("test-callbacks-job").
-        Step(bb.NewStep().Name("step-1").Commands("echo 'Test callbacks job running'").
-        OnSuccess(func(event *bb.JobStatusChangedEvent) {
-            bb.Log(bb.LogLevelInfo, "Job is finished; new jobs could be created here")
-        }).
-        OnFailure(func(event *bb.JobStatusChangedEvent) {
-            bb.Log(bb.LogLevelInfo, "Job failed")
-        }))
-```
 
 ## Artifacts
 
