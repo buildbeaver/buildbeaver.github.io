@@ -19,15 +19,15 @@ The following methods on the Build object can be used to fetch status informatio
 data structures defined in the OpenAPI ``client`` package that contains data definitions and low-level API functions.
 
 In the Go SDK some of these methods have a second version with ``Must`` prepended to the name; these versions are
-the same method but will terminate the program (and fail the build) on error, rather than returning an error.
+the same method but will terminate the program (and so fail the build) on error.
 
 - **GetBuildGraph()**: Reads and returns the current Build Graph. Returns a ``client.BuildGraph``
   object containing information about all Jobs and Steps in the entire build, together with
   the current statubs of every Job and Step. Returns an error if the Build Controller program can't read the info.
 
 - **GetJob(jobID)**: Reads and returns information about a job. Returns a ``client.Job`` object containing various
-  data including the current status of the Job. The JobID is a Globally Unique ID (GUID) for the job and is typically
-  available from the ``JobStatusChangedEvent.JobID property``.
+  data including the current status of the Job. The JobID is a Globally Unique ID (GUID) for the job and can be
+  obtained from the ``JobID`` property of a ``JobStatusChangedEvent`` object.
   Returns an error if the Build Controller program can't read the info.
 
 - **GetJobGraph(jobID)**: Reads and returns information about a job including all steps within the job (forming
@@ -56,20 +56,32 @@ func handler(w *bb.Workflow) error {
 
 ## Fetching artifacts
 
-To be documented:
+The following methods on the Build object can be used to find and download artifacts produced by previous Jobs:
 
-  ```func (b *Build) ListArtifacts(workflow string, jobName string, groupName string) (*ArtifactPage, error)```
+- **ListArtifacts(workflow, jobName, groupName)**: reads information about artifacts from the current build
+  that match the provided workflow, job and artifact group. Pass an empty string for any parameter to match any
+  value for that parameter.
 
-  ```func (b *Build) ListArtifactsN(workflow string, jobName string, groupName string, pageSize int) (*ArtifactPage, error)```
+  Returns an ``ArtifactPage`` object containing the first page of up to 30  ``client.Artifact`` objects; call Next()
+  on the returned object to get the next page of results, or Prev() to get the previous page.
 
-  ```func (b *Build) GetArtifactData(artifactID string) ([]byte, error)```
+- **ListArtifactsN(workflow, jobName, groupName, pageSize)**: same as ListArtifacts but allows the page size to
+  be specified instead of defaulting to 30.
+
+- **GetArtifactData(artifactID)**: reads and returns the binary data for an artifact. An artifactID
+  can be obtained from the ``Id`` field of a ``client.Artifact`` object obtained from ListArtifacts().
+
 
 ## Fetching logs
 
-To be documented:
+The following methods on the Build object can be used to find and download the logs produced by previous Jobs:
 
-  ```func (b *Build) GetLogDescriptor(logDescriptorID string) (*client.LogDescriptor, error)```
+- **GetLogDescriptor(logDescriptorID)**: returns a ``client.LogDescriptor`` object containing information/metadata
+  about the log for a Job or a Step. A logDescriptorID can be obtained from a ``client.Job`` or ``client.Step``
+  object, returned by GetBuildGraph(), GetJob() and GetJobGraph().
 
-  ```func (b *Build) ReadLogData(logDescriptorID string, expand bool) (io.ReadCloser, error)```
+- **ReadLogText(logDescriptorID, expand)**: reads the data for a Job or Step log as plain text (e.g. the log for a
+  job or for a step). If expand is true then nested logs will be expanded and returned.
 
-  ```func (b *Build) ReadLogText(logDescriptorID string, expand bool) (io.ReadCloser, error)```
+- **ReadLogData(logDescriptorID, expand)**: reads the data for a Job or Step log as a series of JSON log entries. 
+  If expand is true then nested logs will be expanded and returned.
