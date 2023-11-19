@@ -1,8 +1,9 @@
 # BuildBeaver Documentation
 
-This repo contains the GitHub pages documentation for BuildBeaver.
+To read the documentation for BuildBeaver please go to https://buildbeaver.github.io/
 
-Source content is on `main` branch, deployed live site is on `gh-pages` branch.
+This repo contains the source for the GitHub pages documentation for BuildBeaver. Source content is on `main` branch, deployed
+live site is on `gh-pages` branch.
 
 This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
 
