@@ -52,8 +52,10 @@ sections:
 
 - **Desc** (optional): a human-readable description for the job.
 
-- **Type** (optional): whether this job is docker-based or native. Can be omitted if a the Docker() method is
-  used to define how to run in a Docker container, which implies Docker type.
+- **Type** (optional): specifies whether this job runs in a Docker container (``JobTypeDocker``),
+  or natively on the same machine as the runner or bb command (``JobTypeExec``).
+  Can be omitted if a [Docker Configuration](#docker-configuration) is specified via the
+  Docker() method. For native/exec jobs ``Type(bb.JobTypeExec)`` must be specified explicitly.
 
 - **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step Definition*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
