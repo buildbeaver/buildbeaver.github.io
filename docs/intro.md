@@ -32,7 +32,7 @@ Docker containers.
 - **Fingerprinting**: Speed up builds by re-using artifacts from previous builds when the inputs to a Job haven't
 changed.
 
-There's more to BuildBeaver - see the [Dynamic Builds Guide](category/guide-to-dynamic-builds) for details.
+See the [Dynamic Builds Guide](category/guide-to-dynamic-builds) for details of these features and more.
 
 ## Getting Started
 

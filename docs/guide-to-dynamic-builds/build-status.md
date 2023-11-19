@@ -36,7 +36,7 @@ the same method but will terminate the program (and so fail the build) on error.
   Returns an error if the Build Controller program can't read the info.
 
 Here's an example of a workflow handler which submits and Job, waits until that job is completed, then reads and
-outputs information about the entire build (some details replaced with ``....`` for brevity):
+outputs information about the entire build:
 
 ```go
 func handler(w *bb.Workflow) error {
@@ -52,6 +52,8 @@ func handler(w *bb.Workflow) error {
 					    jobGraph.Job.Name, jobGraph.Job.Status))
 			}
         }))
+	return nil
+}
 ```
 
 ## Fetching artifacts

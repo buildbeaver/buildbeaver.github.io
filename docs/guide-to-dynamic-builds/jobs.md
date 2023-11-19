@@ -24,7 +24,8 @@ Here's a complete example of a Workflow Handler that submits a Job, written in G
 func handler(w *bb.Workflow) error {
     w.Job(bb.NewJob().
         Name("test-job").
-        Step(bb.NewStep().
+        Docker(bb.NewDocker().Image("docker:20.10").Pull(bb.DockerPullIfNotExists)).
+		Step(bb.NewStep().
             Name("test-job-step").
             Commands("echo This is the test job..."), 
 	))
@@ -51,6 +52,9 @@ sections:
 
 - **Desc** (optional): a human-readable description for the job.
 
+- **Type** (optional): whether this job is docker-based or native. Can be omitted if a the Docker() method is
+  used to define how to run in a Docker container, which implies Docker type.
+
 - **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step Definition*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
 
@@ -66,7 +70,7 @@ sections:
 
 - **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
   execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
-  already produced the required artifacts. See [Fingerprinting](fingerprints) for details and examples.
+  already produced the required artifacts. See [Fingerprints](fingerprints) for details and examples.
 
 - **Service** (optional): Jobs can make use of services such as databases by calling NewService() to create
   a *Service Definition*, then calling the Job's Service() method to add the service.
@@ -93,16 +97,17 @@ The following methods are available to set properties on an Artifact Definition:
   included in the artifact. Paths are relative to the checked-out source working directory.
   Wildcards (*) can be used to pattern-match parts of a path.
 
-Here's an example of a Job that defines an Artifact that includes all files in the reports directory (some details
+Here's an example in Go of a Job that defines an Artifact that includes all files in the reports directory (some details
 replaced with ``....`` for brevity):
 
 ```go
     w.Job(bb.NewJob().
 		Name("reporting-job").
+        Docker(....).
+        Step(....).
         Artifact(bb.NewArtifact().
             Name("reports").
-            Paths("reports/*")).
-        Step(....))
+            Paths("reports/*")))
   ```
 
 ## Job Dependencies
@@ -124,11 +129,13 @@ The following Job methods are available to define dependencies:
   ```go
       w.Job(bb.NewJob().
           Name("job-1").
+          Docker(....).
           Step(....).
           Artifacts(....))
       w.Job(bb.NewJob().
           Name("job-2").
           Depends("my-workflow.job-1.artifacts").
+          Docker(....).
           Step(....))
   ```
 
@@ -143,6 +150,7 @@ The following Job methods are available to define dependencies:
   ```go
       job1 := bb.NewJob().
           Name("job-1").
+          Docker(....).
           Step(....).
           Artifacts(....)
       w.Job(job1)
@@ -150,6 +158,7 @@ The following Job methods are available to define dependencies:
       w.Job(bb.NewJob().
           Name("job-2").
           DependsOnJobArtifacts(job1).
+          Docker(....).
           Step(....))  
   ```
 
