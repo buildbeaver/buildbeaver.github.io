@@ -78,6 +78,111 @@ sections:
   a *Service Definition*, then calling the Job's Service() method to add the service.
   See [Services](services) for details and examples.
 
+## Docker Configuration
+
+Jobs can run either in a Docker container ('docker' jobs) or natively on the machine where the runner or *bb*
+executable is running ('native' or 'exec' jobs).
+
+For Docker jobs, configuration options can be specified on a per-job basis using the following Job method:
+
+- **Docker** (optional): call NewDocker() to create a *Docker Configuration*, then call the Job's Docker() method
+  to configure Docker for the job.
+
+The following methods are available to set properties on an Docker Configuration:
+
+- *Image* (mandatory): specifies the name of the Docker image to use when running this Job.
+
+- *BasicAuth* (optional): configures basic auth credentials for the Docker registry, to use when fetching the Docker
+  image to run under. Takes a BasicAuth object to specify the username and password for authentication, using
+  [Secrets](jobs#secrets) to keep passwords secure..
+
+- *AWSAuth* (optional): configures AWS auth credentials for AWS ECR, to use when fetching the Docker
+  image to run under. Takes an AWSAuth object to specify the details for authentication, using
+  [Secrets](jobs#secrets) to keep IDs and passwords secure.
+
+- *Shell* (optional): specifies the shell to use to run commands inside the docker container.
+  Default is '/bin/sh' for Unix-based containers, or 'cmd.exe' for Windows-based containers.
+
+- *Pull* (optional): specifies when to pull the Docker image from the Registry. Constants are provided for
+  these options:
+
+  - ``DockerPullNever``: never pull the image; it must already exist in the cache
+  
+  - ``DockerPullAlways``: always pull the image, just before the Job is run each time
+  
+  - ``DockerPullIfNotExists``: pull the image only if there is no version in the cache
+  
+  - ``DockerPullDefault``: the default behaviour if no Pull() option specified. This is equivalent to
+    ``DockerPullAlways`` if the image tag is 'latest', or ``DockerPullIfNotExists`` if the image tag refers
+    to a specific version.
+
+Here's an example of a docker Job with an image and pull strategy defined (some details
+replaced with ``....`` for brevity):
+
+```go
+    w.Job(bb.NewJob().
+		Name("a-docker-based-job").
+		Docker(bb.NewDocker().
+            Image("node:18.4.0-alpine").
+            Pull(bb.DockerPullIfNotExists))).
+        Step(....))
+  ```
+## Environment Variables
+
+Jobs can be provided information via environment variables. Variables specified in the Job definition apply to
+every Step within the Job. The values for variables can be provided as literal values, or
+[Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
+
+Environment variables can be specified using the following Job method:
+
+- **Env** (optional): specifies an environment variable that should be passed to commands that run within the Job
+  when they are executed. The Env() method can be called multiple times to add multiple variables.
+
+The following methods are available to set properties on an environment variable.
+
+- *Name* (mandatory): specifies the name of the environment variable to be provided to the Job. This can be
+  referenced from within shell commands with name in UPPER_CASE.
+
+- *Value*: specifies a literal value for the environment variable; use this only for values that do not
+  need to be kept secret.
+
+- *ValueFromSecret*: the name of a *Secret* used to obtain the value for the
+  environment variable; the actual value will be fetched at runtime.
+
+(note that either *Value* or *ValueFromSecret* must be called)
+
+Here's an example of a Job being passed environment variables, with and without secrets:
+
+```go
+    w.Job(bb.NewJob().
+		Name("my-job").
+        Docker(....).
+		Env(bb.NewEnv().
+            Name("MY_ID").
+            Value("a-literal-value")).
+        Env(bb.NewEnv().
+            Name("AWS_SECRET_ACCESS_KEY").
+            ValueFromSecret("ACCESS_KEY_SECRET_NAME")).
+        Step(bb.NewStep().
+            Name("go-builder").
+            Commands("echo My ID is $MY_ID")))
+ ```
+
+## Secrets
+
+Secrets provide a mechanism to avoid sensitive information such as passwords or tokens having to be hard coded
+into the build definition YAML or code. Secrets are used by providing a *secret name* instead of a literal value,
+and can be used for [Enviroment Variables](jobs#environment-variables) or within
+[Docker Configuration](jobs#docker-configuration) - see those sections for the syntax.
+
+The values for secrets are provided at runtime:
+
+- *Builds run via the *bb* command-line tool*: secret values are provided via environment variables set when
+  bb is run. For each secret there must be a corresponding environment variable with the same name.
+
+- *Builds run from the BuildBeaver server*: secret values are set within the Build Configuration via the GUI.
+
+
 ## Artifacts
 
 An *Artifact* is a set of files produced by the Job that form part of the output of the build. When builds are run on
@@ -89,7 +194,7 @@ The following Job method is used to define artifacts:
 - **Artifact** (optional): call NewArtifact() to create an *Artifact Definition*, then call the
   Job's Artifact() method to add the artifact. The Artifact() method can be called multiple times to define
   more than one artifact.
- 
+
 The following methods are available to set properties on an Artifact Definition:
 
 - *Name* (mandatory): each artifact must have a name, unique within the build. Names must be identifiers that
@@ -124,7 +229,7 @@ The following Job methods are available to define dependencies:
   [Job Dependency Syntax](../yaml-guide/jobs#job-dependency-syntax). The specified job can be in a different
   workflow from the dependent job; this can be used as a more efficient alternative to
   [Workflow Dependencies](workflows#workflow-dependencies).
-  
+
   Here's an example where *job-2* depends on *job-1* and requires all artifacts from *job-1* to be available
   (some details replaced with ``....`` for brevity):
 
@@ -133,7 +238,7 @@ The following Job methods are available to define dependencies:
           Name("job-1").
           Docker(....).
           Step(....).
-          Artifacts(....))
+          Artifact(bb.NewArtifact().Name("reports").Paths("reports/*")))
       w.Job(bb.NewJob().
           Name("job-2").
           Depends("my-workflow.job-1.artifacts").
@@ -148,13 +253,13 @@ The following Job methods are available to define dependencies:
 - **DependsOnJobArtifacts** (optional): indicates that the job depends on the specified other jobs, and that
   all artifacts from those jobs should be made available to the dependent job.
   This is a simpler alternative to using dependency strings of the form ``workflowname.jobname.artifacts``. Here's an example:
-  
+
   ```go
       job1 := bb.NewJob().
           Name("job-1").
           Docker(....).
           Step(....).
-          Artifacts(....)
+          Artifact(bb.NewArtifact().Name("reports").Paths("reports/*")))
       w.Job(job1)
   
       w.Job(bb.NewJob().
@@ -163,107 +268,3 @@ The following Job methods are available to define dependencies:
           Docker(....).
           Step(....))  
   ```
-
-## Docker Configuration
-
-Jobs can run either in a Docker container ('docker' jobs) or natively on the machine where the runner or *bb*
-executable is running ('native' or 'exec' jobs).
-
-For Docker jobs, configuration options can be specified on a per-job basis using the following Job method:
-
-- **Docker** (optional): call NewDocker() to create a *Docker Configuration*, then call the Job's Docker() method
-  to configure Docker for the job.
-
-The following methods are available to set properties on an Docker Configuration:
-
-- *Image* (mandatory): specifies the name of the Docker image to use when running this Job.
-
-- *BasicAuth* (optional): configures basic auth credentials for the Docker registry, to use when fetching the Docker
-  image to run under. Takes a BasicAuth object to specify the username and password for authentication, using
-  [Secrets](jobs#secrets) to keep passwords secure..
-
-- *AWSAuth* (optional): configures AWS auth credentials for AWS ECR, to use when fetching the Docker
-  image to run under. Takes an AWSAuth object to specify the details for authentication, using
-  [Secrets](jobs#secrets) to keep IDs and passwords secure.
-
-- *Shell* (optional): specifies the shell to use to run commands inside the docker container.
-  Default is '/bin/sh' for Unix-based containers, or 'cmd.exe' for Windows-based containers.
-
-- *Pull* (optional): specifies when to pull the Docker image from the Registry. Constants are provided for
-  these options:
-
-  - *DockerPullNever*: never pull the image; it must already exist in the cache
-  
-  - *DockerPullAlways*: always pull the image, just before the Job is run each time
-  
-  - *DockerPullIfNotExists*: pull the image only if there is no version in the cache
-  
-  - *DockerPullDefault*: the default behaviour if no Pull() option specified. This is equivalent to
-    *DockerPullAlways* if the image tag is 'latest', or *DockerPullIfNotExists* if the image tag refers
-    to a specific version.
-
-Here's an example of a docker Job with an image and pull strategy defined (some details
-replaced with ``....`` for brevity):
-
-```go
-    w.Job(bb.NewJob().
-		Name("a-docker-based-job").
-		Docker(bb.NewDocker().
-            Image("node:18.4.0-alpine").
-            Pull(bb.DockerPullIfNotExists))).
-        Step(....))
-  ```
-
-## Environment Variables
-
-Jobs can be provided information via environment variables. Variables specified in the Job definition apply to
-every Step within the Job. The values for variables can be provided as literal values, or
-[Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
-
-Environment variables can be specified using the following Job method:
-
-- **Env** (optional): specifies an environment variable that should be passed to commands that run within the Job
-  when they are executed. The Env() method can be called multiple times to add multiple variables.
-
-The following methods are available to set properties on an environment variable.
-
-- *Name* (mandatory): specifies the name of the environment variable to be provided to the Job. This can be
-  referenced from within shell commands with name in UPPER_CASE.
-
-- *Value*: specifies a literal value for the environment variable; use this only for values that do not
-  need to be kept secret.
-
-- *ValueFromSecret*: the name of a *Secret* used to obtain the value for the
-  environment variable; the actual value will be fetched at runtime.
-
-(note that either *Value* or *ValueFromSecret* must be called)
-
-Here's an example of a Job being passed environment variables, with and without secrets:
-
-```go
-    w.Job(bb.NewJob().
-		Name("my-job").
-        Env(bb.NewEnv().
-            Name("MY_ID").
-            Value("a-literal-value")).
-        Env(bb.NewEnv().
-            Name("AWS_SECRET_ACCESS_KEY").
-            ValueFromSecret("ACCESS_KEY_SECRET_NAME")).
-        Step(bb.NewStep().
-            Name("go-builder").
-            Commands("echo My ID is $MY_ID")))
- ```
-
-## Secrets
-
-Secrets provide a mechanism to avoid sensitive information such as passwords or tokens having to be hard coded
-into the build definition YAML or code. Secrets are used by providing a *secret name* instead of a literal value,
-and can be used for [Enviroment Variables](jobs#environment-variables) or within
-[Docker Configuration](jobs#docker-configuration) - see those sections for the syntax.
-
-The values for secrets are provided at runtime:
-
-- *Builds run via the *bb* command-line tool*: secret values are provided via environment variables set when
-  bb is run. For each secret there must be a corresponding environment variable with the same name.
-
-- *Builds run from the BuildBeaver server*: secret values are set within the Build Configuration via the GUI.
