@@ -21,10 +21,11 @@ Here's a complete example (in Go) of a Workflow Handler that adds a Job containi
 func handler(w *bb.Workflow) error {
     w.Job(bb.NewJob().
         Name("test-job").
+		Docker(bb.NewDocker().Image("docker:20.10").Pull(bb.DockerPullIfNotExists)).
         StepExecution(bb.StepExecutionSequential). // this is the default, can be omitted
         Step(bb.NewStep().
             Name("first-step").
-            Commands("echo This is the first step in the Job..."),
+            Commands("echo This is the first step in the Job...")).
         Step(bb.NewStep().
             Name("second-step").
             Commands("echo A second step..."), 

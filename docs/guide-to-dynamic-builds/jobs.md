@@ -24,7 +24,8 @@ Here's a complete example of a Workflow Handler that submits a Job, written in G
 func handler(w *bb.Workflow) error {
     w.Job(bb.NewJob().
         Name("test-job").
-        Step(bb.NewStep().
+        Docker(bb.NewDocker().Image("docker:20.10").Pull(bb.DockerPullIfNotExists)).
+		Step(bb.NewStep().
             Name("test-job-step").
             Commands("echo This is the test job..."), 
 	))
@@ -51,147 +52,31 @@ sections:
 
 - **Desc** (optional): a human-readable description for the job.
 
+- **Type** (optional): specifies whether this job runs in a Docker container (``JobTypeDocker``),
+  or natively on the same machine as the runner or bb command (``JobTypeExec``).
+  Can be omitted if a [Docker Configuration](#docker-configuration) is specified via the
+  Docker() method. For native/exec jobs ``Type(bb.JobTypeExec)`` must be specified explicitly.
+
 - **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step Definition*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
 
 - **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
  or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
 
-- **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
-  execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
-  already produced the required artifacts. See [Fingerprinting](fingerprints) for details and examples.
-
 - **RunsOn** (optional): a set of labels constraining which types of runner the job can run on. Only runners
   which have all of these labels will be eligible to run this Job. Not relevant when builds are run using
   the *bb* command line tool.
 
+- **OnCompletion**, **OnSuccess**, **OnFailure**, **OnStatusChanged** (optional): Call the supplied callback function
+  after the Job is completed. See [Job Callbacks](callbacks-and-waits#job-callbacks) for details and examples.
+
+- **Fingerprint** (optional): specifies a way to calculate a *fingerprint* for inputs to the Job, allowing
+  execution to be skipped if a previous build already ran the Job with the same inputs, and therefore
+  already produced the required artifacts. See [Fingerprints](fingerprints) for details and examples.
+
 - **Service** (optional): Jobs can make use of services such as databases by calling NewService() to create
   a *Service Definition*, then calling the Job's Service() method to add the service.
   See [Services](services) for details and examples.
-
-## Job Callbacks
-
-To take advantage of the dynamic nature of builds, a *Job Callback* function can be called after
-a job has succeeded, failed, or the each time job's status changes. Callbacks are often used to submit
-new jobs to a workflow after previous jobs have finished, based on the results or artifacts produced by
-the previous job.
-
-The callback function takes a single *event* parameter which will contain the Job's new status; other information
-(e.g. artifacts) can be discovered and read from within the callback using the Workflow object.
-
-  ```go
-  type JobCallback func(event *JobStatusChangedEvent)
-  ```
-
-As with workflow handler functions, after the callback function returns any outstanding jobs will be submitted.
-The workflow object's Submit() or MustSubmit() functions can also be used in a callback to submit new jobs
-immediately. Note that the workflow function will often have returned before the callback is called, having finished
-submitting the initial set of Jobs to run.
-
-The following Job methods are available to define callbacks. Each specifies a function to be called:
-
-- **OnCompletion** (optional): call when the Job is completed (succeeded, failed or cancelled).
-
-- **OnSuccess** (optional): call when the Job succeeds. Not called on error.
-
-- **OnFailure** (optional): call when the Job fails.
-
-- **OnStatusChanged** (optional): call each time the status of the Job changes.
-
-Here's an example of the use of callbacks in Go:
-
-```go
-    w.Job(bb.NewJob().
-		Name("test-callbacks-job").
-        Step(bb.NewStep().Name("step-1").Commands("echo 'Test callbacks job running'").
-        OnSuccess(func(event *bb.JobStatusChangedEvent) {
-            bb.Log(bb.LogLevelInfo, "Job is finished; new jobs could be created here")
-        }).
-        OnFailure(func(event *bb.JobStatusChangedEvent) {
-            bb.Log(bb.LogLevelInfo, "Job failed")
-        }))
-```
-
-## Artifacts
-
-An *Artifact* is a set of files produced by the Job that form part of the output of the build. When builds are run on
-a server, artifact files are stored after the build is completed. When a build is run via the *bb* command line
-tool, artifact files remain on the local machine after the build is run.
-
-The following Job method is used to define artifacts:
-
-- **Artifact** (optional): call NewArtifact() to create an *Artifact Definition*, then call the
-  Job's Artifact() method to add the artifact. The Artifact() method can be called multiple times to define
-  more than one artifact.
- 
-The following methods are available to set properties on an Artifact Definition:
-
-- *Name* (mandatory): each artifact must have a name, unique within the build. Names must be identifiers that
-  do not contain spaces.
-
-- *Paths* (mandatory): specifies one or more strings, each defining a path that matches files that should be
-  included in the artifact. Paths are relative to the checked-out source working directory.
-  Wildcards (*) can be used to pattern-match parts of a path.
-
-Here's an example of a Job that defines an Artifact that includes all files in the reports directory (some details
-replaced with ``....`` for brevity):
-
-```go
-    w.Job(bb.NewJob().
-		Name("reporting-job").
-        Artifact(bb.NewArtifact().
-            Name("reports").
-            Paths("reports/*")).
-        Step(....))
-  ```
-
-## Job Dependencies
-
-*Job dependencies* can be used to ensure a job doesn't run until after another job completes, and optionally to
-make available artifacts from another job. If no job dependencies are specified then all submitted jobs
-are eligible to run in parallel.
-
-The following Job methods are available to define dependencies:
-
-- **Depends** (optional): specifies one or more dependencies as strings, using the YAML
-  [Job Dependency Syntax](../yaml-guide/jobs#job-dependency-syntax). The specified job can be in a different
-  workflow from the dependent job; this can be used as a more efficient alternative to
-  [Workflow Dependencies](workflows#workflow-dependencies).
-  
-  Here's an example where *job-2* depends on *job-1* and requires all artifacts from *job-1* to be available
-  (some details replaced with ``....`` for brevity):
-
-  ```go
-      w.Job(bb.NewJob().
-          Name("job-1").
-          Step(....).
-          Artifacts(....))
-      w.Job(bb.NewJob().
-          Name("job-2").
-          Depends("my-workflow.job-1.artifacts").
-          Step(....))
-  ```
-
-- **DependsOnJobs** (optional): indicates that the job depends on the specified other jobs, provided as
-  references to Job objects defined previously.
-  This is a simpler alternative to using dependency strings of the form ``workflowname.jobname`` (see example below).
-
-- **DependsOnJobArtifacts** (optional): indicates that the job depends on the specified other jobs, and that
-  all artifacts from those jobs should be made available to the dependent job.
-  This is a simpler alternative to using dependency strings of the form ``workflowname.jobname.artifacts``. Here's an example:
-  
-  ```go
-      job1 := bb.NewJob().
-          Name("job-1").
-          Step(....).
-          Artifacts(....)
-      w.Job(job1)
-  
-      w.Job(bb.NewJob().
-          Name("job-2").
-          DependsOnJobArtifacts(job1).
-          Step(....))  
-  ```
 
 ## Docker Configuration
 
@@ -221,14 +106,14 @@ The following methods are available to set properties on an Docker Configuration
 - *Pull* (optional): specifies when to pull the Docker image from the Registry. Constants are provided for
   these options:
 
-  - *DockerPullNever*: never pull the image; it must already exist in the cache
+  - ``DockerPullNever``: never pull the image; it must already exist in the cache
   
-  - *DockerPullAlways*: always pull the image, just before the Job is run each time
+  - ``DockerPullAlways``: always pull the image, just before the Job is run each time
   
-  - *DockerPullIfNotExists*: pull the image only if there is no version in the cache
+  - ``DockerPullIfNotExists``: pull the image only if there is no version in the cache
   
-  - *DockerPullDefault*: the default behaviour if no Pull() option specified. This is equivalent to
-    *DockerPullAlways* if the image tag is 'latest', or *DockerPullIfNotExists* if the image tag refers
+  - ``DockerPullDefault``: the default behaviour if no Pull() option specified. This is equivalent to
+    ``DockerPullAlways`` if the image tag is 'latest', or ``DockerPullIfNotExists`` if the image tag refers
     to a specific version.
 
 Here's an example of a docker Job with an image and pull strategy defined (some details
@@ -242,7 +127,6 @@ replaced with ``....`` for brevity):
             Pull(bb.DockerPullIfNotExists))).
         Step(....))
   ```
-
 ## Environment Variables
 
 Jobs can be provided information via environment variables. Variables specified in the Job definition apply to
@@ -272,7 +156,8 @@ Here's an example of a Job being passed environment variables, with and without 
 ```go
     w.Job(bb.NewJob().
 		Name("my-job").
-        Env(bb.NewEnv().
+        Docker(....).
+		Env(bb.NewEnv().
             Name("MY_ID").
             Value("a-literal-value")).
         Env(bb.NewEnv().
@@ -296,3 +181,90 @@ The values for secrets are provided at runtime:
   bb is run. For each secret there must be a corresponding environment variable with the same name.
 
 - *Builds run from the BuildBeaver server*: secret values are set within the Build Configuration via the GUI.
+
+
+## Artifacts
+
+An *Artifact* is a set of files produced by the Job that form part of the output of the build. When builds are run on
+a server, artifact files are stored after the build is completed. When a build is run via the *bb* command line
+tool, artifact files remain on the local machine after the build is run.
+
+The following Job method is used to define artifacts:
+
+- **Artifact** (optional): call NewArtifact() to create an *Artifact Definition*, then call the
+  Job's Artifact() method to add the artifact. The Artifact() method can be called multiple times to define
+  more than one artifact.
+
+The following methods are available to set properties on an Artifact Definition:
+
+- *Name* (mandatory): each artifact must have a name, unique within the build. Names must be identifiers that
+  do not contain spaces.
+
+- *Paths* (mandatory): specifies one or more strings, each defining a path that matches files that should be
+  included in the artifact. Paths are relative to the checked-out source working directory.
+  Wildcards (*) can be used to pattern-match parts of a path.
+
+Here's an example in Go of a Job that defines an Artifact that includes all files in the reports directory (some details
+replaced with ``....`` for brevity):
+
+```go
+    w.Job(bb.NewJob().
+		Name("reporting-job").
+        Docker(....).
+        Step(....).
+        Artifact(bb.NewArtifact().
+            Name("reports").
+            Paths("reports/*")))
+  ```
+
+## Job Dependencies
+
+*Job dependencies* can be used to ensure a job doesn't run until after another job completes, and optionally to
+make available artifacts from another job. If no job dependencies are specified then all submitted jobs
+are eligible to run in parallel.
+
+The following Job methods are available to define dependencies:
+
+- **Depends** (optional): specifies one or more dependencies as strings, using the YAML
+  [Job Dependency Syntax](../yaml-guide/jobs#job-dependency-syntax). The specified job can be in a different
+  workflow from the dependent job; this can be used as a more efficient alternative to
+  [Workflow Dependencies](workflows#workflow-dependencies).
+
+  Here's an example where *job-2* depends on *job-1* and requires all artifacts from *job-1* to be available
+  (some details replaced with ``....`` for brevity):
+
+  ```go
+      w.Job(bb.NewJob().
+          Name("job-1").
+          Docker(....).
+          Step(....).
+          Artifact(bb.NewArtifact().Name("reports").Paths("reports/*")))
+      w.Job(bb.NewJob().
+          Name("job-2").
+          Depends("my-workflow.job-1.artifacts").
+          Docker(....).
+          Step(....))
+  ```
+
+- **DependsOnJobs** (optional): indicates that the job depends on the specified other jobs, provided as
+  references to Job objects defined previously.
+  This is a simpler alternative to using dependency strings of the form ``workflowname.jobname`` (see example below).
+
+- **DependsOnJobArtifacts** (optional): indicates that the job depends on the specified other jobs, and that
+  all artifacts from those jobs should be made available to the dependent job.
+  This is a simpler alternative to using dependency strings of the form ``workflowname.jobname.artifacts``. Here's an example:
+
+  ```go
+      job1 := bb.NewJob().
+          Name("job-1").
+          Docker(....).
+          Step(....).
+          Artifact(bb.NewArtifact().Name("reports").Paths("reports/*")))
+      w.Job(job1)
+  
+      w.Job(bb.NewJob().
+          Name("job-2").
+          DependsOnJobArtifacts(job1).
+          Docker(....).
+          Step(....))  
+  ```
