@@ -13,9 +13,9 @@ should declare [Artifact Dependencies](jobs#job-dependencies) to make files from
 
 ## Submitting a Job
 
-A new Job is added to a workflow by calling ``NewJob()`` to create a *Job Definition*, then calling the workflow Job()
-method to add the definition to a list of jobs ready to be submitted to the server. After the workflow
-function returns, any outstanding jobs will be submitted. Properties are set on the Job Definition by
+A new Job is added to a workflow by calling ``NewJob()`` to create a *Job object*, then calling the workflow Job()
+method to add to a list of jobs ready to be submitted to the server. After the workflow
+function returns, any outstanding jobs will be submitted. Properties are set on the Job object by
 calling methods on the object.
 
 Here's a complete example of a Workflow Handler that submits a Job, written in Go:
@@ -57,7 +57,7 @@ sections:
   Can be omitted if a [Docker Configuration](#docker-configuration) is specified via the
   Docker() method. For native/exec jobs ``Type(bb.JobTypeExec)`` must be specified explicitly.
 
-- **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step Definition*,
+- **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step object*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
 
 - **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
@@ -75,7 +75,7 @@ sections:
   already produced the required artifacts. See [Fingerprints](fingerprints) for details and examples.
 
 - **Service** (optional): Jobs can make use of services such as databases by calling NewService() to create
-  a *Service Definition*, then calling the Job's Service() method to add the service.
+  a *Service object*, then calling the Job's Service() method to associate the service with the Job.
   See [Services](services) for details and examples.
 
 ## Docker Configuration
@@ -129,7 +129,7 @@ replaced with ``....`` for brevity):
   ```
 ## Environment Variables
 
-Jobs can be provided information via environment variables. Variables specified in the Job definition apply to
+Jobs can be provided information via environment variables. Variables specified in the Job object apply to
 every Step within the Job. The values for variables can be provided as literal values, or
 [Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
 
@@ -191,11 +191,11 @@ tool, artifact files remain on the local machine after the build is run.
 
 The following Job method is used to define artifacts:
 
-- **Artifact** (optional): call NewArtifact() to create an *Artifact Definition*, then call the
+- **Artifact** (optional): call NewArtifact() to create an *Artifact object*, then call the
   Job's Artifact() method to add the artifact. The Artifact() method can be called multiple times to define
   more than one artifact.
 
-The following methods are available to set properties on an Artifact Definition:
+The following methods are available to set properties on an Artifact:
 
 - *Name* (mandatory): each artifact must have a name, unique within the build. Names must be identifiers that
   do not contain spaces.
