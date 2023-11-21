@@ -7,7 +7,7 @@ sidebar_position: 1
 Assuming you have BuildBeaver set up to build your repository using either [Go](../getting-started-go/create-a-build-in-go.md) or [YAML](../yaml-guide/yaml.md) then integrating
 with GitHub actions is as easy as adding the [setup-bb GitHub Action](https://github.com/buildbeaver/setup-bb) into your GitHub workflows.
 
-Create a YAML file for a GitHub Actions workflow in your repo, e.g. ``.github/workflows/bb-run.yml``, and
+Try creating a YAML file for a GitHub Actions workflow in your repo, e.g. ``.github/workflows/bb-run.yml``, and
 paste in the following content, editing the artifacts definitions to match your BuildBeaver build:
 
 ```yaml
@@ -70,7 +70,7 @@ jobs:
       uses: buildbeaver/setup-bb@main
 ```
 
-#### Only install the BuildBeaver CLI into your PATH
+#### Install the BuildBeaver CLI into your PATH without running
 
 The following GitHub Actions workflow YAML will install the default version of BB CLI into your Runner's path but
 not run the tool. Any execution of bb is up to you to add later:
