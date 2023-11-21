@@ -17,9 +17,9 @@ Before you start, ensure you have the following installed on your development ma
 ## Install BuildBeaver
 
 Download the **BuildBeaver command-line tool** executable for either
-[Mac (Intel)](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_osx_x64.zip),
-[Mac (arm)](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_osx_arm64.zip),
-[Linux](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_linux_x64.zip) or
+[Mac (Intel)](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_osx_x64.tar.gz),
+[Mac (arm)](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_osx_arm64.tar.gz),
+[Linux](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_linux_x64.tar.gz) or
 [Windows](https://github.com/buildbeaver/bb-cli/releases/download/v1.0.0/bb_1.0.0_win_x64.zip).
 
 Extract the ``bb`` tool from the archive and add it to your path.
