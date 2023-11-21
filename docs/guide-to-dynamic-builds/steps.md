@@ -12,13 +12,12 @@ Each job must contain at least one Step, and each Step contains a list of shell 
 ## Adding a Step
 
 The workflow handler function adds a new Step to a Job by calling ``NewStep()`` to create a
-*Step Definition*, then calling the Job's ``Step()`` method to add the Step. Properties are set on the Step Definition
+*Step object*, then calling the Job's ``Step()`` method to add the Step. Properties are set on the Step
 by calling methods on the object.
 
-Here's a complete example (in Go) of a Workflow Handler that adds a Job containing two Steps, run sequentially:
+Here's an example (in Go) of a Job containing two Steps, run sequentially:
 
 ```go
-func handler(w *bb.Workflow) error {
     w.Job(bb.NewJob().
         Name("test-job").
 		Docker(bb.NewDocker().Image("docker:20.10").Pull(bb.DockerPullIfNotExists)).
@@ -30,8 +29,6 @@ func handler(w *bb.Workflow) error {
             Name("second-step").
             Commands("echo A second step..."), 
         ))
-	return nil
-}
 ```
 
 ## Step Execution
@@ -60,5 +57,5 @@ The following methods are available to set properties on a Step:
   the current job can be referenced, and this list is only used when steps in the current job are
   being executed in parallel.
 
-- **DependsOnSteps** (optional): Similar to the *Depends* method but takes a list of *Step Definition* objects rather
+- **DependsOnSteps** (optional): Similar to the *Depends* method but takes a list of *Step objects* rather
  than step names, specifying steps that must be completed before this step can be run.

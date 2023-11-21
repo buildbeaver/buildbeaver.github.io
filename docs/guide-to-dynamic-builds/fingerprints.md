@@ -13,7 +13,7 @@ If no fingerprint is defined for a Job then it will never be skipped.
 ## Defining a Fingerprint
 
 The workflow handler function defines a Fingerprint for a Job by calling the ``Fingerprint()`` method on
-the Job Definition object. This method takes a list of commands (strings) that list the Job's inputs. The
+the Job object. This method takes a list of commands (strings) that list the Job's inputs. The
 commands should output either the full input data, or a hash of the data, to stdout.
 
 Before the Job's Steps are run, all the fingerprint commands will be run, and their stdout output concatenated
