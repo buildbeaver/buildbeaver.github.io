@@ -52,16 +52,20 @@ sections:
 
 - **Desc** (optional): a human-readable description for the job.
 
-- **Type** (optional): specifies whether this job runs in a Docker container (``JobTypeDocker``),
-  or natively on the same machine as the runner or bb command (``JobTypeExec``).
-  Can be omitted if a [Docker Configuration](#docker-configuration) is specified via the
-  Docker() method. For native/exec jobs ``Type(bb.JobTypeExec)`` must be specified explicitly.
-
 - **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step object*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
 
 - **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
- or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
+  or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
+
+- **Type** (optional): specifies whether this job runs in a Docker container (``JobTypeDocker``),
+  or natively on the same machine as the runner or bb command (``JobTypeExec``).
+  Can be omitted if a [Docker Configuration](docker-configuration) is specified via the
+  Docker() method. For native/exec jobs ``Type(bb.JobTypeExec)`` must be specified explicitly.
+
+- **Docker** (mandatory for Docker Jobs): specifies how to run the Job in a Docker container, for Jobs with ``JobTypeDocker``.
+  Call NewDocker() to create a *Docker Config object*, then call the Job's Docker() method
+  to use it for the Job. See [Docker Configuration](docker-configuration) for details and examples.
 
 - **RunsOn** (optional): a set of labels constraining which types of runner the job can run on. Only runners
   which have all of these labels will be eligible to run this Job. Not relevant when builds are run using
@@ -78,55 +82,7 @@ sections:
   a *Service object*, then calling the Job's Service() method to associate the service with the Job.
   See [Services](services) for details and examples.
 
-## Docker Configuration
 
-Jobs can run either in a Docker container ('docker' jobs) or natively on the machine where the runner or *bb*
-executable is running ('native' or 'exec' jobs).
-
-For Docker jobs, configuration options can be specified on a per-job basis using the following Job method:
-
-- **Docker** (optional): call NewDocker() to create a *Docker Configuration*, then call the Job's Docker() method
-  to configure Docker for the job.
-
-The following methods are available to set properties on an Docker Configuration:
-
-- *Image* (mandatory): specifies the name of the Docker image to use when running this Job.
-
-- *BasicAuth* (optional): configures basic auth credentials for the Docker registry, to use when fetching the Docker
-  image to run under. Takes a BasicAuth object to specify the username and password for authentication, using
-  [Secrets](jobs#secrets) to keep passwords secure..
-
-- *AWSAuth* (optional): configures AWS auth credentials for AWS ECR, to use when fetching the Docker
-  image to run under. Takes an AWSAuth object to specify the details for authentication, using
-  [Secrets](jobs#secrets) to keep IDs and passwords secure.
-
-- *Shell* (optional): specifies the shell to use to run commands inside the docker container.
-  Default is '/bin/sh' for Unix-based containers, or 'cmd.exe' for Windows-based containers.
-
-- *Pull* (optional): specifies when to pull the Docker image from the Registry. Constants are provided for
-  these options:
-
-  - ``DockerPullNever``: never pull the image; it must already exist in the cache
-  
-  - ``DockerPullAlways``: always pull the image, just before the Job is run each time
-  
-  - ``DockerPullIfNotExists``: pull the image only if there is no version in the cache
-  
-  - ``DockerPullDefault``: the default behaviour if no Pull() option specified. This is equivalent to
-    ``DockerPullAlways`` if the image tag is 'latest', or ``DockerPullIfNotExists`` if the image tag refers
-    to a specific version.
-
-Here's an example of a docker Job with an image and pull strategy defined (some details
-replaced with ``....`` for brevity):
-
-```go
-    w.Job(bb.NewJob().
-		Name("a-docker-based-job").
-		Docker(bb.NewDocker().
-            Image("node:18.4.0-alpine").
-            Pull(bb.DockerPullIfNotExists))).
-        Step(....))
-  ```
 ## Environment Variables
 
 Jobs and Services can be provided information via environment variables. Variables specified in the Job object apply
@@ -138,10 +94,10 @@ Environment variables can be specified using the following Job method:
 - **Env** (optional): specifies an environment variable that should be passed to commands that run within the Job
   when they are executed. The Env() method can be called multiple times to add multiple variables.
 
-The following methods are available to set properties on an environment variable.
+The following methods are available to set properties on an environment variable:
 
 - *Name* (mandatory): specifies the name of the environment variable to be provided to the Job. This can be
-  referenced from within shell commands with name in UPPER_CASE.
+  referenced from within shell commands with name in ALL_CAPS.
 
 - *Value*: specifies a literal value for the environment variable; use this only for values that do not
   need to be kept secret.
@@ -173,15 +129,20 @@ Here's an example of a Job being passed environment variables, with and without 
 Secrets provide a mechanism to avoid sensitive information such as passwords or tokens having to be hard coded
 into the build definition YAML or code. Secrets are used by providing a *secret name* instead of a literal value,
 and can be used for [Enviroment Variables](jobs#environment-variables) or within
-[Docker Configuration](jobs#docker-configuration) - see those sections for the syntax.
+[Docker Configuration](docker-configuration) - see those sections for the syntax.
 
 The values for secrets are provided at runtime:
 
-- *Builds run via the *bb* command-line tool*: secret values are provided via environment variables set when
-  bb is run. For each secret there must be a corresponding environment variable with the same name.
+- *Builds run via the *bb* command-line tool*: secret values must be provided via environment variables set before
+  `bb` is run. You are responsible for ensuring the Environment variable are set; for each secret there must
+  be a corresponding environment variable with the same name.
 
 - *Builds run from the BuildBeaver server*: secret values are set within the Build Configuration via the GUI.
 
+:::tip
+Secret names should normally be in ALL_CAPS since they are sourced from environment variables when using the
+`bb` command-line tool. Having everything in ALL_CAPS makes things simpler.
+:::
 
 ## Artifacts
 
@@ -226,7 +187,7 @@ are eligible to run in parallel.
 The following Job methods are available to define dependencies:
 
 - **Depends** (optional): specifies one or more dependencies as strings, using the YAML
-  [Job Dependency Syntax](../yaml-guide/jobs#job-dependency-syntax). The specified job can be in a different
+  [Job Dependency Syntax](../yaml-guide/job-dependency-syntax). The specified job can be in a different
   workflow from the dependent job; this can be used as a more efficient alternative to
   [Workflow Dependencies](workflows#workflow-dependencies).
 
