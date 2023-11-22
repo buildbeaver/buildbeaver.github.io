@@ -15,31 +15,16 @@ The following elements can be specified:
 
 - **name**: mandatory name for the job; referred to in dependencies.
 - **description**: optional description for the job.
+- **steps**: mandatory list of Steps to run for the Job - see [Steps](steps)
+- **step_execution**: optional value of "sequential" or "parallel".
 - **type**: optional value of "docker" or "exec", for Docker-based vs native jobs.
 - **runs_on**: optional list of labels constraining which types of runner the job can run on.
-- **depends**: optional list of dependencies for the job, each one a string using [Job Dependency Syntax](#job-dependency-syntax)
-- **docker**: specifies the Docker environment to use when running a Job - see [Docker Configuration](#docker-configuration)
+- **depends**: optional list of dependencies for the job, each one a string using [Job Dependency Syntax](job-dependency-syntax)
+- **docker**: specifies the Docker environment to use when running a Job - see [Docker Configuration](docker-configuration)
 - **environment**: optional map of name-value pairs for environment variables - see [Environment Variables](#environment-variables)
 - **fingerprint**: optional list of command strings to produce the Job's fingerprint - see the [Fingerprints](../guide-to-dynamic-builds/fingerprints) Guide for details.
-- **step_execution**: optional value of "sequential" or "parallel".
-- **steps**: mandatory list of Steps to run for the Job - see [Steps](steps)
 - **artifacts**: optional list of Artifacts defined by the Job - see [Artifacts](#artifacts)
 - **services**: optional list of Services to run alongside the Job - see [Services](services)
-
-
-## Docker Configuration
-
-A Job's docker container configuration is specified using a 'docker' map.
-
-The YAML syntax mirrors the Docker Configuration in the Dynamic SDL; see the
-[Docker Configuration](../guide-to-dynamic-builds/docker-configuration) Guide for details.
-The following elements can be specified:
-
-- **image**: mandatory name of the Docker image to use when running this Job.
-- **shell**: optional shell to use to run commands inside the docker container.
-- **pull**: optional docker pull strategy; possible values are "default", "never", "always" or "if-not-exists".
-- **basic_auth**: optional basic auth credentials for the Docker registry, to use when fetching the Docker image
-- **aws_auth**: optional AWS auth credentials for AWS ECR, to use when fetching the Docker image
 
 ## Artifacts
 
@@ -87,15 +72,8 @@ Jobs and Services can be provided information via environment variables. Variabl
 apply to every Step within the Job.
 
 Environment variables are specified using a map of variable names to values. Each value can either be a string
-(for a literal value) or an object containing a from_secret element with a secret name.
-[Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
-
-:::tip
-Variable names should normally be given in ALL_CAPS since they are mapped to environment variables to be passed
-to the Steps and Services at runtime.
-When running the `bb` command-line tool the values for any required secrets must be provided in environment variables,
-so secret names should also normally be in ALL_CAPS.
-:::
+(for a literal value) or an object containing a **from_secret** element with a secret name.
+[Secrets](../guide-to-dynamic-builds/jobs#secrets) can be used to ensure that the provided information remains secure.
 
 Here's an example of specifying two environment variables, one with a literal value and one using a secret:
 
@@ -106,29 +84,10 @@ Here's an example of specifying two environment variables, one with a literal va
         from_secret: DB_PASSWORD 
 ```
 
+:::tip
+Variable names should normally be given in ALL_CAPS since they are mapped to environment variables to be passed
+to the Steps and Services at runtime.
 
-## Job Dependency Syntax
-
-Job dependencies are specified using a simple syntax to refer to the job that must be completed.
-This includes the workflow, the job name, then optionally ``artifacts`` to request that all artifacts
-from the specified job are made available to the dependent job.
-
-If ``artifacts`` is followed by an artifact name then only that artifact is fetched, rather than all
-artifacts from the specified job.
-
-Note that if the workflow is omitted then this refers to a job defined in YAML in the *default workflow*,
-not the current workflow.
-
-Example job dependency strings:
-
-  ```
-    workflow1.test-job
-  ```
-
-  ```
-    workflow1.test-job.artifacts
-  ```
-
-  ```
-    workflow1.test-job.artifacts.report
-  ```
+When running the `bb` command-line tool the values for any required secrets must be provided in environment variables,
+so secret names should also normally be in ALL_CAPS.
+:::

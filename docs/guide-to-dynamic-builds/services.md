@@ -66,10 +66,11 @@ The following methods are available to set properties on a Service:
   are defined in the same way as for Jobs, and [Secrets](jobs#secrets) can be used; for details please see the Job
   [Environment Variables](jobs#environment-variables) section.
 
-- **BasicAuth** (optional): configures basic auth credentials for the Docker registry, to use when fetching the Docker
-  image to run under. Takes a BasicAuth object to specify the username and password for authentication, using
-  [Secrets](jobs#secrets) to keep passwords secure..
+- **BasicAuth** (optional): configures Basic Authentication credentials for the Docker registry, to use when
+  fetching the Docker image. Takes a BasicAuth object to specify the username and password
+  for authentication; see
+  [Authentication for Docker Registries](docker-configuration#authentication-for-docker-registries) for details.
 
-- **AWSAuth** (optional): configures AWS auth credentials for AWS ECR, to use when fetching the Docker
-  image to run under. Takes an AWSAuth object to specify the details for authentication, using
-  [Secrets](jobs#secrets) to keep IDs and passwords secure.
+- **AWSAuth** (optional): configures AWS Authentication credentials for Amazon ECR, to use when fetching the Docker
+  image. Takes an AWSAuth object to specify the details for authentication; see
+  [Authentication for Docker Registries](docker-configuration#authentication-for-docker-registries) for details.

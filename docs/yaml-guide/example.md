@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 20
 ---
 
 # Real-World Example
@@ -8,7 +8,7 @@ The following YAML is a real-world build, and demonstrates most of the features 
 syntax.
 
 ```YAML
-version: "0.2"
+version: "0.3"
 
 templates:
   use_go_builder_docker_image: &use_go_builder_docker_image

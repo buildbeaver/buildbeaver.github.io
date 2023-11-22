@@ -55,6 +55,9 @@ sections:
 - **Step** (mandatory): each *Step* is added to the Job by calling NewStep() to create a *Step object*,
   then calling the Job's Step() method to add the step. See [Steps](steps) for details and examples.
 
+- **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
+  or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
+
 - **Type** (optional): specifies whether this job runs in a Docker container (``JobTypeDocker``),
   or natively on the same machine as the runner or bb command (``JobTypeExec``).
   Can be omitted if a [Docker Configuration](docker-configuration) is specified via the
@@ -63,9 +66,6 @@ sections:
 - **Docker** (mandatory for Docker Jobs): specifies how to run the Job in a Docker container, for Jobs with ``JobTypeDocker``.
   Call NewDocker() to create a *Docker Config object*, then call the Job's Docker() method
   to use it for the Job. See [Docker Configuration](docker-configuration) for details and examples.
-
-- **StepExecution** (optional): specifies whether the Steps in this Job should be run sequentially (the default)
- or in parallel. Possible values are ``StepExecutionSequential`` or  ``StepExecutionParallel``.
 
 - **RunsOn** (optional): a set of labels constraining which types of runner the job can run on. Only runners
   which have all of these labels will be eligible to run this Job. Not relevant when builds are run using
@@ -94,7 +94,7 @@ Environment variables can be specified using the following Job method:
 - **Env** (optional): specifies an environment variable that should be passed to commands that run within the Job
   when they are executed. The Env() method can be called multiple times to add multiple variables.
 
-The following methods are available to set properties on an environment variable.
+The following methods are available to set properties on an environment variable:
 
 - *Name* (mandatory): specifies the name of the environment variable to be provided to the Job. This can be
   referenced from within shell commands with name in ALL_CAPS.
@@ -187,7 +187,7 @@ are eligible to run in parallel.
 The following Job methods are available to define dependencies:
 
 - **Depends** (optional): specifies one or more dependencies as strings, using the YAML
-  [Job Dependency Syntax](../yaml-guide/jobs#job-dependency-syntax). The specified job can be in a different
+  [Job Dependency Syntax](../yaml-guide/job-dependency-syntax). The specified job can be in a different
   workflow from the dependent job; this can be used as a more efficient alternative to
   [Workflow Dependencies](workflows#workflow-dependencies).
 
