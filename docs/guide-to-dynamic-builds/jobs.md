@@ -129,8 +129,8 @@ replaced with ``....`` for brevity):
   ```
 ## Environment Variables
 
-Jobs can be provided information via environment variables. Variables specified in the Job object apply to
-every Step within the Job. The values for variables can be provided as literal values, or
+Jobs and Services can be provided information via environment variables. Variables specified in the Job object apply
+to every Step within the Job. The values for variables can be provided as literal values, or
 [Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
 
 Environment variables can be specified using the following Job method:

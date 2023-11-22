@@ -44,17 +44,17 @@ jobs:
       pull: if-not-exists
     fingerprint:
       - sha1sum build/docker/go-builder/Dockerfile
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: AWS_SECRET_ACCESS_KEY
     steps:
       - name: go-builder
         commands: |
           apk add bash git aws-cli
           git config --global --add safe.directory $(pwd)
           ./build/scripts/build-docker.sh -t $BB_JOB_FINGERPRINT -p go-builder
-        environment:
-          AWS_ACCESS_KEY_ID:
-            from_secret: AWS_ACCESS_KEY_ID
-          AWS_SECRET_ACCESS_KEY:
-            from_secret: AWS_SECRET_ACCESS_KEY
 
   - name: backend-preflight
     description: Performs preflight checks on all backend code
@@ -111,27 +111,27 @@ jobs:
     depends: [ backend-base-images, backend-generate.artifacts ]
     docker: *use_go_builder_docker_image
     fingerprint: *go_job_fingerprint
+    environment:
+      TEST_DB_DRIVER: sqlite3
     steps:
       - name: test
         commands: |
           . build/scripts/lib/go-env.sh
           cd backend && go test -v -count=1 -mod=vendor -short ./...
-        environment:
-          TEST_DB_DRIVER: sqlite3
 
   - name: backend-unit-test-postgres
     description: Runs all backend unit tests on top of Postgres
     depends: [ backend-base-images, backend-generate.artifacts ]
     docker: *use_go_builder_docker_image
     fingerprint: *go_job_fingerprint
+    environment:
+      TEST_DB_DRIVER: postgres
+      TEST_CONNECTION_STRING: postgres://username:put-password-here@postgres:5432/?sslmode=disable
     steps:
       - name: test
         commands: |
           . build/scripts/lib/go-env.sh
           cd backend && go test -v -count=1 -mod=vendor -short ./...
-        environment:
-          TEST_DB_DRIVER: postgres
-          TEST_CONNECTION_STRING: postgres://username:put-password-here@postgres:5432/?sslmode=disable
     services:
       - name: postgres
         image: postgres:14
@@ -144,27 +144,27 @@ jobs:
     depends: [ backend-base-images, backend-generate.artifacts ]
     docker: *use_go_builder_docker_image
     fingerprint: *go_job_fingerprint
+    environment:
+      TEST_DB_DRIVER: sqlite3
     steps:
       - name: test
         commands: |
           . build/scripts/lib/go-env.sh
           cd backend && go test -v -count=1 -mod=vendor -run Integration ./...
-        environment:
-          TEST_DB_DRIVER: sqlite3
 
   - name: backend-integration-test-postgres
     description: Runs all backend integration tests on top of Postgres
     depends: [ backend-base-images, backend-generate.artifacts ]
     docker: *use_go_builder_docker_image
     fingerprint: *go_job_fingerprint
+    environment:
+      TEST_DB_DRIVER: postgres
+      TEST_CONNECTION_STRING: postgres://username:put-password-here@postgres:5432/?sslmode=disable
     steps:
       - name: test
         commands: |
           . build/scripts/lib/go-env.sh
           cd backend && go test -v -count=1 -mod=vendor -run Integration ./...
-        environment:
-          TEST_DB_DRIVER: postgres
-          TEST_CONNECTION_STRING: postgres://username:put-password-here@postgres:5432/?sslmode=disable
     services:
       - name: postgres
         image: postgres:14
