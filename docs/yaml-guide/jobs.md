@@ -32,7 +32,7 @@ The following elements can be specified:
 A Job's docker container configuration is specified using a 'docker' map.
 
 The YAML syntax mirrors the Docker Configuration in the Dynamic SDL; see the
-[Docker Configuration](../guide-to-dynamic-builds/jobs#docker-configuration) Guide for details.
+[Docker Configuration](../guide-to-dynamic-builds/docker-configuration) Guide for details.
 The following elements can be specified:
 
 - **image**: mandatory name of the Docker image to use when running this Job.
@@ -86,12 +86,15 @@ files from two paths:
 Jobs and Services can be provided information via environment variables. Variables specified in the Job
 apply to every Step within the Job.
 
-Environment variables are specified using a map of variable names to values. Each value can either be a string (for a literal value) or an object containing a
-from_secret element with a secret name.
+Environment variables are specified using a map of variable names to values. Each value can either be a string
+(for a literal value) or an object containing a from_secret element with a secret name.
 [Secrets](jobs#secrets) can be used to ensure that the provided information remains secure.
 
 :::tip
-Variable names should normally be given in ALL_CAPS since they are mapped to environment variables at runtime.
+Variable names should normally be given in ALL_CAPS since they are mapped to environment variables to be passed
+to the Steps and Services at runtime.
+When running the `bb` command-line tool the values for any required secrets must be provided in environment variables,
+so secret names should also normally be in ALL_CAPS.
 :::
 
 Here's an example of specifying two environment variables, one with a literal value and one using a secret:
