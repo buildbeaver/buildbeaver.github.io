@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
 ---
-
 # BuildBeaver
+
+![The Build Beaver](/img/barry-beaver.jpg)
 
 The *BuildBeaver Team* are a group of DevOps and Build System enthusiasts who believe there is a better way to
 define builds and CI/CD pipelines. Better than a complex spaghetti of YAML and scripts that only the Build Expert
