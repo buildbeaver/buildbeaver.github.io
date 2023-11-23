@@ -25,8 +25,8 @@ write-file-job.: Uploading artifacts...
 After the build has run, we can see the artifact produced:
 
 ```bash
-% ls output
+% ls reports
 artifact-file.txt
-% cat output/artifact-file.txt
+% cat reports/artifact-file.txt
 This is the artifact from my first build
 ```

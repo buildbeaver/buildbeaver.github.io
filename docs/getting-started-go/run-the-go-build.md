@@ -95,8 +95,10 @@ dynamic-build: INFO: run-tests job is finished; new jobs could be added here
 After the build has run, we can see the artifact produced:
 
 ```bash
-% ls results
-test-report.txt
-% cat results/test-report.txt
+% ls
+build   buildbeaver.yml   reports
+% ls reports
+artifact-file.txt   test-report.txt
+% cat reports/test-report.txt
 Test Report (artifact from the run-tests job)
 ```

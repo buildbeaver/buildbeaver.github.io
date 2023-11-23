@@ -17,9 +17,9 @@ git init .
 
 The repo must have a at least one commit:
 ```bash
-echo >.gitignore 'output/'
+echo >.gitignore 'reports/'
 git add .gitignore
-git commit -a -m "Tell Git to ignore the 'output' directory"
+git commit -a -m "Tell Git to ignore the 'reports' directory"
 ```
 
 ## Set up a build YAML file:
@@ -37,12 +37,12 @@ jobs:
     steps:
       - name: write-file
         commands: |
-          mkdir -p output
-          echo >output/artifact-file.txt "This is the artifact from my first build"
+          mkdir -p reports
+          echo >reports/artifact-file.txt "This is the artifact from my first build"
     artifacts:
       - name: text-file-artifacts
-        paths: output/*.txt
+        paths: reports/*.txt
  ```
 
-This YAML defines a build with a single Job and a single step, creating an artifact in the 'output' directory.
+This YAML defines a build with a single Job and a single step, creating an artifact in the 'reports' directory.
 Note that we don't need to commit this file to Git before running it.
