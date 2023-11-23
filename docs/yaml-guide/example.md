@@ -7,7 +7,7 @@ sidebar_position: 20
 The following YAML is a real-world build, and demonstrates most of the features of the BuildBeaver YAML
 syntax.
 
-```YAML
+```yaml
 version: "0.3"
 
 templates:
