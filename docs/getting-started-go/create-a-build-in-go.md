@@ -26,7 +26,7 @@ go mod init example.com/build
 Fetch the BuildBeaver Go SDK:
 
 ```bash
-go get github.com/buildbeaver/go-sdk
+go get github.com/buildbeaver/go-sdk/bb
 ```
 Create a Go file inside the ``build`` directory called `build.go` and paste in the following contents:
 
@@ -66,8 +66,9 @@ func submitTestJobs(w *bb.Workflow) error {
 ```
 We'll explain more about what's in the program later.
 
-Finally run the following command to sync the vendor directory:
+After creating the `build.go` file you should run the following commands to sync the go.mod file and vendor directory:
 
 ```bash
+go mod tidy
 go mod vendor
 ```
