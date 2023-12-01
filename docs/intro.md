@@ -35,6 +35,17 @@ changed.
 
 See the [Dynamic Builds Guide](category/guide-to-dynamic-builds) for details of these features and more.
 
+### Open Source Repos
+
+All the open source repos can be found
+at [BuildBeaver on GitHub](https://github.com/buildbeaver), including
+the [BB CLI](https://github.com/buildbeaver/bb-cli) build tool,
+the [Go SDK](https://github.com/buildbeaver/go-sdk) 
+and a [GitHub Action](https://github.com/buildbeaver/setup-bb) for running BuildBeaver in your repo.
+
+[Binary releases](https://github.com/buildbeaver/bb-cli/releases) for the BB CLI build tool are available on GitHub.
+
+
 ## Getting Started
 
 Get started using *BuildBeaver* with YAML and Golang in 10 minutes.
