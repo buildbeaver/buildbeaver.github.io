@@ -56,12 +56,12 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Social card
-      image: 'img/beaver1.jpg',
+      image: 'img/barry-beaver.jpg',
       navbar: {
         title: 'BuildBeaver',
         logo: {
           alt: 'BuildBeaver Logo',
-          src: 'img/beaver1.png',
+          src: 'img/favicon-beaver.png',
         },
         items: [
           {
